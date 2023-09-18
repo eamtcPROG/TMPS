@@ -1,6 +1,7 @@
 package user.controllers;
 
 import user.interfaces.IUserController;
+import user.interfaces.IUserService;
 import user.services.UserService;
 import user.utils.UIHelper;
 import user.utils.UserMapper;
@@ -11,9 +12,9 @@ import java.time.LocalDate;
 
 public class UserController implements IUserController {
 
-    private final UserService userService;
+    private final IUserService userService;
 
-    public UserController(UserService userService) {
+    public UserController(IUserService userService) {
         this.userService = userService;
     }
 
