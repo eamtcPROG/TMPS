@@ -1,9 +1,9 @@
 package user.controllers;
 
+import general.utils.UIHelper;
 import user.interfaces.IUserController;
 import user.interfaces.IUserService;
 import user.services.UserService;
-import user.utils.UIHelper;
 import user.utils.UserMapper;
 import user.models.User;
 import user.dto.UserDTO;
@@ -26,8 +26,9 @@ public class UserController implements IUserController {
         String dateOfBirthStr = UIHelper.readInput("Enter date of birth (yyyy-mm-dd): ");
         LocalDate dateOfBirth = LocalDate.parse(dateOfBirthStr);
 
-        User newUser = new User(0, firstName, lastName, email, null, dateOfBirth);
-        userService.saveOrUpdate(newUser);
+        UserDTO newUser = new UserDTO(0, firstName, lastName, email, dateOfBirth);
+        UserMapper userMapper = new UserMapper();
+        userService.saveOrUpdate(userMapper.toEntity(newUser));
 
         UIHelper.displayMessage("User created successfully!");
     }
