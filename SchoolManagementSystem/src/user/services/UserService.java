@@ -8,9 +8,14 @@ import user.interfaces.IUserService;
 import java.util.List;
 
 public class UserService implements IUserService {
-
+    private static IUserService instance;
     private final IUserRepository userRepository;
-
+    public static IUserService getInstance(IUserRepository userRepository) {
+        if (instance == null) {
+            instance = new UserService(userRepository);
+        }
+        return instance;
+    }
     public UserService(IUserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -28,9 +33,9 @@ public class UserService implements IUserService {
     @Override
     public User saveOrUpdate(User user) {
         if(user.getId() == 0) {
-            userRepository.save(user);
+            userRepository.save(user.clone());
         } else {
-            userRepository.update(user);
+            userRepository.update(user.clone());
         }
         return user;
     }
