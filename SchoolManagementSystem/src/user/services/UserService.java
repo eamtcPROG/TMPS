@@ -1,5 +1,6 @@
 package user.services;
 
+import general.interfaces.IRepository;
 import user.interfaces.IUserRepository;
 import user.models.User;
 import user.repositories.UserRepository;
@@ -9,9 +10,9 @@ import java.util.List;
 
 public class UserService implements IUserService {
 
-    private final IUserRepository userRepository;
+    private final IRepository<User> userRepository;
 
-    public UserService(IUserRepository userRepository) {
+    public UserService(IRepository<User> userRepository) {
         this.userRepository = userRepository;
     }
 

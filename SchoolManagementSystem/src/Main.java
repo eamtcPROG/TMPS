@@ -1,6 +1,8 @@
 import com.google.gson.reflect.TypeToken;
+import general.interfaces.IRepository;
 import general.utils.UIHelper;
 import user.controllers.UserController;
+import user.interfaces.IUserService;
 import user.models.User;
 import user.repositories.UserRepository;
 import user.services.UserService;
@@ -17,8 +19,8 @@ public class Main {
 
         Type listType = new TypeToken<List<User>>() {}.getType();
         JsonDataSource<User> dataSource = new JsonDataSource<>(listType);
-        UserRepository userRepository = new UserRepository(dataSource, "../SchoolManagementSystem/resources/user/user.json");
-        UserService userService = new UserService(userRepository);
+        IRepository<User> userRepository = new UserRepository(dataSource, "../SchoolManagementSystem/resources/user/user.json");
+        IUserService userService = new UserService(userRepository);
         UserController userController = new UserController(userService);
 
         while (true) {
