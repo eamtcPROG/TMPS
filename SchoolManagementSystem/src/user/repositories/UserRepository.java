@@ -10,9 +10,27 @@ import java.util.stream.Collectors;
 
 public class UserRepository implements IUserRepository {
 
+    private static IUserRepository instance;
     private List<User> users = new ArrayList<>();
     private final DataSource<User> dataSource;
     private final String userJsonPath;
+
+    public static IUserRepository getInstance(DataSource<User> dataSource, String userJsonPath) {
+        if (instance == null) {
+            instance = new UserRepository(dataSource, userJsonPath);
+        }
+        return instance;
+    }
+    public User acquireUser() {
+        if (users.isEmpty()) {
+            return new User();
+        }
+        return users.remove(0);
+    }
+
+    public void releaseUser(User user) {
+        users.add(user);
+    }
 
     public UserRepository(DataSource<User> dataSource, String userJsonPath) {
         this.dataSource = dataSource;
@@ -31,7 +49,13 @@ public class UserRepository implements IUserRepository {
     @Override
     public void save(User entity) {
         if (entity != null) {
-            users.add(entity);
+            User userToSave = acquireUser();
+            userToSave.setId(entity.getId());
+            userToSave.setFirstName(entity.getFirstName());
+            userToSave.setLastName(entity.getLastName());
+            userToSave.setEmail(entity.getEmail());
+            userToSave.setDateOfBirth(entity.getDateOfBirth());
+            users.add(userToSave);
             writeUsersToFile();
         }
     }

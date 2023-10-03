@@ -3,7 +3,7 @@ package user.models;
 import java.time.LocalDate;
 
 
-public class User {
+public class User implements Cloneable {
 
     private int id;
     private String firstName;
@@ -13,6 +13,15 @@ public class User {
     private LocalDate dateOfBirth;
 
     public User() {}
+
+    @Override
+    public User clone() {
+        try {
+            return (User) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Clone not supported", e);
+        }
+    }
 
     public User(int id, String firstName, String lastName, String email, String phoneNumber, LocalDate dateOfBirth) {
         this.id = id;

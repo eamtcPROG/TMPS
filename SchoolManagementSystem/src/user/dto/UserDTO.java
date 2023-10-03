@@ -20,11 +20,7 @@ public class UserDTO {
         this.dateOfBirth = dateOfBirth;
     }
 
-    // Notice that phoneNumber is not included in the DTO.
-    // This could be a deliberate decision, for example, if we don't want to expose that data in certain views.
-    // You can always add it back if needed.
 
-    // Standard getters and setters
 
     public int getId() {
         return id;

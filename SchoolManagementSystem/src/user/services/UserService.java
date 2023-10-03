@@ -12,7 +12,17 @@ public class UserService implements IUserService {
 
     private final IRepository<User> userRepository;
 
+    private static IUserService instance;
+//    private final IUserRepository userRepository;
+
+    public static IUserService getInstance(IRepository<User> userRepository) {
+        if (instance == null) {
+            instance = new UserService(userRepository);
+        }
+        return instance;
+    }
     public UserService(IRepository<User> userRepository) {
+
         this.userRepository = userRepository;
     }
 
@@ -29,9 +39,9 @@ public class UserService implements IUserService {
     @Override
     public User saveOrUpdate(User user) {
         if(user.getId() == 0) {
-            userRepository.save(user);
+            userRepository.save(user.clone());
         } else {
-            userRepository.update(user);
+            userRepository.update(user.clone());
         }
         return user;
     }

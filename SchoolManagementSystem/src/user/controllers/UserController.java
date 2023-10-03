@@ -1,6 +1,7 @@
 package user.controllers;
 
 import general.utils.UIHelper;
+import user.dto.UserBuilder;
 import user.interfaces.IUserController;
 import user.interfaces.IUserService;
 import user.services.UserService;
@@ -26,7 +27,13 @@ public class UserController implements IUserController {
         String dateOfBirthStr = UIHelper.readInput("Enter date of birth (yyyy-mm-dd): ");
         LocalDate dateOfBirth = LocalDate.parse(dateOfBirthStr);
 
-        UserDTO newUser = new UserDTO(0, firstName, lastName, email, dateOfBirth);
+        UserDTO newUser = new UserBuilder()
+                .setId(0)
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setEmail(email)
+                .setDateOfBirth(dateOfBirth)
+                .build();
         UserMapper userMapper = new UserMapper();
         userService.saveOrUpdate(userMapper.toEntity(newUser));
 
