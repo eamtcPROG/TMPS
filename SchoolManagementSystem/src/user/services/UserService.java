@@ -26,6 +26,8 @@ public class UserService implements IUserService {
         this.userRepository = userRepository;
     }
 
+
+
     @Override
     public User findById(int id) {
         return userRepository.findById(id);
@@ -38,13 +40,22 @@ public class UserService implements IUserService {
 
     @Override
     public User saveOrUpdate(User user) {
-        if(user.getId() == 0) {
-            userRepository.save(user.clone());
+        User existingUser = userRepository.findById(user.getId());
+        if (existingUser == null) {
+            // Use Prototype pattern to clone a new user
+            User newUser = user.clone();
+            userRepository.save(newUser);
         } else {
-            userRepository.update(user.clone());
+            // Update existing user
+            existingUser.setFirstName(user.getFirstName());
+            existingUser.setLastName(user.getLastName());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setDateOfBirth(user.getDateOfBirth());
+            userRepository.update(existingUser);
         }
         return user;
     }
+
 
     @Override
     public void delete(int id) {

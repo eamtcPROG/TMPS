@@ -29,6 +29,15 @@ public class UserRepository implements IUserRepository {
     }
 
     public void releaseUser(User user) {
+        // Reset the state of the user object
+        user.setId(0);
+        user.setFirstName(null);
+        user.setLastName(null);
+        user.setEmail(null);
+        user.setPhoneNumber(null);
+        user.setDateOfBirth(null);
+
+        // Add back to the pool
         users.add(user);
     }
 
@@ -47,17 +56,19 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
-    public void save(User entity) {
-        if (entity != null) {
-            User userToSave = acquireUser();
-            userToSave.setId(entity.getId());
-            userToSave.setFirstName(entity.getFirstName());
-            userToSave.setLastName(entity.getLastName());
-            userToSave.setEmail(entity.getEmail());
-            userToSave.setDateOfBirth(entity.getDateOfBirth());
-            users.add(userToSave);
-            writeUsersToFile();
-        }
+    public void save(User user) {
+        User pooledUser = acquireUser();  // Acquire a user from the pool
+        // Copy the data from the input user to the pooled user
+        pooledUser.setId(user.getId());
+        pooledUser.setFirstName(user.getFirstName());
+        pooledUser.setLastName(user.getLastName());
+        pooledUser.setEmail(user.getEmail());
+        pooledUser.setDateOfBirth(user.getDateOfBirth());
+
+        users.add(pooledUser);
+        writeUsersToFile();
+
+        releaseUser(pooledUser);  // Release the user back to the pool
     }
 
     @Override
@@ -75,6 +86,15 @@ public class UserRepository implements IUserRepository {
 
     @Override
     public void update(User entity) {
+        User pooledUser = acquireUser();  // Acquire a user from the pool
+
+        // Copy the data from the input user to the pooled user
+        pooledUser.setId(entity.getId());
+        pooledUser.setFirstName(entity.getFirstName());
+        pooledUser.setLastName(entity.getLastName());
+        pooledUser.setEmail(entity.getEmail());
+        pooledUser.setDateOfBirth(entity.getDateOfBirth());
+
         int index = -1;
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getId() == entity.getId()) {
@@ -83,10 +103,13 @@ public class UserRepository implements IUserRepository {
             }
         }
         if (index != -1) {
-            users.set(index, entity);
-            writeUsersToFile();
+            users.set(index, pooledUser);  // Update the user in the list
+            writeUsersToFile();  // Write updated list to file
         }
+
+        releaseUser(pooledUser);  // Release the user back to the pool
     }
+
 
     @Override
     public void delete(int id) {

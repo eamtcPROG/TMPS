@@ -34,8 +34,9 @@ public class UserController implements IUserController {
                 .setEmail(email)
                 .setDateOfBirth(dateOfBirth)
                 .build();
-        UserMapper userMapper = new UserMapper();
-        userService.saveOrUpdate(userMapper.toEntity(newUser));
+//        UserMapper userMapper = new UserMapper();
+        User user = UserMapper.toEntity(newUser);
+        userService.saveOrUpdate(user.clone());
 
         UIHelper.displayMessage("User created successfully!");
     }
