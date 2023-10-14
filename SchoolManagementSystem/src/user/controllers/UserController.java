@@ -4,6 +4,8 @@ import general.utils.UIHelper;
 import user.dto.UserBuilder;
 import user.interfaces.IUserController;
 import user.interfaces.IUserService;
+import user.interfaces.UserDecorator;
+import user.models.UserWithRole;
 import user.services.UserService;
 import user.utils.UserMapper;
 import user.models.User;
@@ -36,8 +38,10 @@ public class UserController implements IUserController {
                 .build();
 //        UserMapper userMapper = new UserMapper();
         User user = UserMapper.toEntity(newUser);
-        userService.saveOrUpdate(user.clone());
 
+        userService.saveOrUpdate(user.clone());
+        UserDecorator decoratedUser = new UserWithRole(user, "Admin");
+        decoratedUser.display();
         UIHelper.displayMessage("User created successfully!");
     }
 

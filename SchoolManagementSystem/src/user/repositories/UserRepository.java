@@ -13,11 +13,11 @@ public class UserRepository implements IUserRepository {
     private static IUserRepository instance;
     private List<User> users = new ArrayList<>();
     private final DataSource<User> dataSource;
-    private final String userJsonPath;
+    private final String dataPath;
 
-    public static IUserRepository getInstance(DataSource<User> dataSource, String userJsonPath) {
+    public static IUserRepository getInstance(DataSource<User> dataSource, String dataPath) {
         if (instance == null) {
-            instance = new UserRepository(dataSource, userJsonPath);
+            instance = new UserRepository(dataSource, dataPath);
         }
         return instance;
     }
@@ -29,7 +29,7 @@ public class UserRepository implements IUserRepository {
     }
 
     public void releaseUser(User user) {
-        // Reset the state of the user object
+
         user.setId(0);
         user.setFirstName(null);
         user.setLastName(null);
@@ -37,19 +37,19 @@ public class UserRepository implements IUserRepository {
         user.setPhoneNumber(null);
         user.setDateOfBirth(null);
 
-        // Add back to the pool
+  
         users.add(user);
     }
 
-    public UserRepository(DataSource<User> dataSource, String userJsonPath) {
+    public UserRepository(DataSource<User> dataSource, String dataPath) {
         this.dataSource = dataSource;
-        this.userJsonPath = userJsonPath;
+        this.dataPath = dataPath;
         loadUsers();
     }
 
 
     private void loadUsers() {
-        List<User> loadedUsers = dataSource.readData(userJsonPath);
+        List<User> loadedUsers = dataSource.readData(dataPath);
         if (loadedUsers != null && !loadedUsers.isEmpty()) {
             users = loadedUsers;
         }
@@ -57,8 +57,8 @@ public class UserRepository implements IUserRepository {
 
     @Override
     public void save(User user) {
-        User pooledUser = acquireUser();  // Acquire a user from the pool
-        // Copy the data from the input user to the pooled user
+        User pooledUser = acquireUser();
+
         pooledUser.setId(user.getId());
         pooledUser.setFirstName(user.getFirstName());
         pooledUser.setLastName(user.getLastName());
@@ -68,7 +68,7 @@ public class UserRepository implements IUserRepository {
         users.add(pooledUser);
         writeUsersToFile();
 
-        releaseUser(pooledUser);  // Release the user back to the pool
+        releaseUser(pooledUser);
     }
 
     @Override
@@ -86,9 +86,9 @@ public class UserRepository implements IUserRepository {
 
     @Override
     public void update(User entity) {
-        User pooledUser = acquireUser();  // Acquire a user from the pool
+        User pooledUser = acquireUser();
 
-        // Copy the data from the input user to the pooled user
+
         pooledUser.setId(entity.getId());
         pooledUser.setFirstName(entity.getFirstName());
         pooledUser.setLastName(entity.getLastName());
@@ -103,11 +103,11 @@ public class UserRepository implements IUserRepository {
             }
         }
         if (index != -1) {
-            users.set(index, pooledUser);  // Update the user in the list
-            writeUsersToFile();  // Write updated list to file
+            users.set(index, pooledUser);
+            writeUsersToFile();
         }
 
-        releaseUser(pooledUser);  // Release the user back to the pool
+        releaseUser(pooledUser);
     }
 
 
@@ -120,6 +120,6 @@ public class UserRepository implements IUserRepository {
     }
 
     private void writeUsersToFile() {
-        dataSource.writeData(userJsonPath, users);
+        dataSource.writeData(dataPath, users);
     }
 }

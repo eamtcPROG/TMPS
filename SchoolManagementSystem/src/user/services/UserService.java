@@ -42,11 +42,11 @@ public class UserService implements IUserService {
     public User saveOrUpdate(User user) {
         User existingUser = userRepository.findById(user.getId());
         if (existingUser == null) {
-            // Use Prototype pattern to clone a new user
+
             User newUser = user.clone();
             userRepository.save(newUser);
         } else {
-            // Update existing user
+
             existingUser.setFirstName(user.getFirstName());
             existingUser.setLastName(user.getLastName());
             existingUser.setEmail(user.getEmail());
