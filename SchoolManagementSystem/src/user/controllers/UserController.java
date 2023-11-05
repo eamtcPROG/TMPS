@@ -10,6 +10,7 @@ import user.services.UserService;
 import user.utils.UserMapper;
 import user.models.User;
 import user.dto.UserDTO;
+import java.util.Random;
 
 import java.time.LocalDate;
 
@@ -28,15 +29,15 @@ public class UserController implements IUserController {
         String email = UIHelper.readInput("Enter email: ");
         String dateOfBirthStr = UIHelper.readInput("Enter date of birth (yyyy-mm-dd): ");
         LocalDate dateOfBirth = LocalDate.parse(dateOfBirthStr);
-
+        Random rand = new Random();
         UserDTO newUser = new UserBuilder()
-                .setId(0)
+                .setId(rand.nextInt(100000))
                 .setFirstName(firstName)
                 .setLastName(lastName)
                 .setEmail(email)
                 .setDateOfBirth(dateOfBirth)
                 .build();
-//        UserMapper userMapper = new UserMapper();
+
         User user = UserMapper.toEntity(newUser);
 
         userService.saveOrUpdate(user.clone());

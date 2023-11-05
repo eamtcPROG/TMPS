@@ -17,28 +17,25 @@ import general.datasources.json.JsonDataSource;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
+import user.mediator.UserManagementMediator;  // Import the mediator
 
 public class Main {
 
     public static void main(String[] args) {
-
         Type listType = new TypeToken<List<User>>() {}.getType();
 
-        // For JSON
+        // Initialize JSON DataSource
         DataSource<User> jsonDataSource = new JsonDataSource<>(listType);
         IRepository<User> jsonUserRepository = UserRepository.getInstance(jsonDataSource, "../SchoolManagementSystem/resources/user/user.json");
         IUserService jsonUserService = UserService.getInstance(jsonUserRepository);
         UserController jsonUserController = new UserController(jsonUserService);
 
-        // For XML through Adapter
-        XMLHandler xmlHandler = new XMLFileHandler();
-        DataSource<User> xmlDataSource = new XMLDataSourceAdapter<>(xmlHandler, listType);
-        IRepository<User> xmlUserRepository = UserRepository.getInstance(xmlDataSource, "../SchoolManagementSystem/resources/user/user.xml");
-        IUserService xmlUserService = UserService.getInstance(xmlUserRepository);
-        UserController xmlUserController = new UserController(xmlUserService);
 
 
+
+        // Initialize Facade and Mediator
         IFacade userManagementFacade = new UserManagementFacade(jsonUserController);
+        UserManagementMediator mediator = new UserManagementMediator(userManagementFacade);  // Initialize the mediator
 
         while (true) {
             List<String> options = Arrays.asList("Add User", "Display Users", "Switch DataSource", "Exit");
@@ -46,19 +43,13 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    userManagementFacade.create();
+                    mediator.createUser();  // Use the mediator
                     break;
                 case 2:
-                    userManagementFacade.display();
+                    mediator.displayUsers();  // Use the mediator
                     break;
                 case 3:
-                    if (jsonUserController == userManagementFacade) {
-                        userManagementFacade = new UserManagementFacade(xmlUserController);
-                        System.out.println("Switched to XML data source.");
-                    } else {
-                        userManagementFacade = new UserManagementFacade(jsonUserController);
-                        System.out.println("Switched to JSON data source.");
-                    }
+                    mediator.switchDataSource();  // Use the mediator to switch data source
                     break;
                 case 4:
                     System.out.println("Exiting...");
