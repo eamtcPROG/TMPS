@@ -48,7 +48,25 @@ public class UserManagementMediator implements Mediator {
 
     @Override
     public void switchDataSource() {
-        // Implementation of data source switching logic
+        IRepository<User> userRepository;
+        IUserService userService;
+        UserController userController;
+
+        if ("JSON".equals(currentDataSource)) {
+            userRepository = UserRepository.getInstance(xmlDataSource, "../SchoolManagementSystem/resources/user/user.xml");
+            userService = UserService.getInstance(userRepository);
+            userController = new UserController(userService);
+            userManagementFacade = new UserManagementFacade(userController);
+            currentDataSource = "XML";
+            System.out.println("Switched to XML data source.");
+        } else {
+            userRepository = UserRepository.getInstance(jsonDataSource, "../SchoolManagementSystem/resources/user/user.json");
+            userService = UserService.getInstance(userRepository);
+            userController = new UserController(userService);
+            userManagementFacade = new UserManagementFacade(userController);
+            currentDataSource = "JSON";
+            System.out.println("Switched to JSON data source.");
+        }
     }
 }
 
